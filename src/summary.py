@@ -75,7 +75,8 @@ def summarize_text(text,
         return f"Error summarizing text: {e}"
 
 
-def save_to_pdf(summary:str,
+def save_to_pdf(youtube_url: str,
+                summary:str,
                 output_path:str,
                 transcript: Optional[str] = None ,
                 include_transcript: bool=False):
@@ -87,6 +88,11 @@ def save_to_pdf(summary:str,
     pdf.set_font("Arial", size=12)
 
     pdf.cell(0, 10, "YouTube Video Transcript and Summary", ln=True, align='C')
+    pdf.ln(10)  # Add some vertical spacing
+
+    # Add the youtube url
+    pdf.set_font("Arial", size=10)
+    pdf.cell(0, 10, youtube_url, ln=True, align='C')
     pdf.ln(10)  # Add some vertical spacing
 
     # Add Summary
@@ -120,7 +126,7 @@ def main():
         model_str = "gpt-4o-mini"
 
     include_transcript_str = input("Include the transcript in the PDF? (y/n): ")
-    include_transcript = include_transcript_str.lower == "y"
+    include_transcript = include_transcript_str.strip().lower() == "y"
 
     max_tokens = input("Enter the maximum number of tokens: ")
     try:
@@ -161,7 +167,8 @@ def main():
 
             # Step 4: Save to PDF
             output_path = "./data/youtube_transcript_summary.pdf"
-            save_to_pdf(summary,
+            save_to_pdf(youtube_url,
+                        summary,
                         output_path,
                         transcript,
                         include_transcript=include_transcript)
