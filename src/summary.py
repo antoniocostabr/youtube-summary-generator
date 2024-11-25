@@ -27,12 +27,12 @@ def extract_video_id(youtube_url: str) -> str:
         return f"Error extracting video ID: {e}"
 
 
-def get_youtube_transcript(video_id: str) -> str:
+def get_youtube_transcript(video_id: str, language: str='en') -> str:
     """
     Fetch the transcript of a YouTube video given its video ID.
     """
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=(language,))
         # Combine transcript into a single string
         transcript_text = " ".join([entry['text'] for entry in transcript])
         return transcript_text
@@ -128,7 +128,14 @@ def main():
     include_transcript_str = input("Include the transcript in the PDF? (y/n): ")
     include_transcript = include_transcript_str.strip().lower() == "y"
 
+    language = \
+        input("Enter the language of the transcript (e.g en for english or pt for portuguese): ")
+
+    if len(language) == 0:
+        language = 'en'
+
     max_tokens = input("Enter the maximum number of tokens: ")
+
     try:
         max_tokens = int(max_tokens)
     except ValueError:
@@ -142,6 +149,8 @@ def main():
         print("Invalid input for temperature. Using default value of 0.3.")
         temperature = 0.3
 
+
+
     # Step 1: Extract video ID
     print("Extracting video ID...")
     video_id = extract_video_id(youtube_url)
@@ -152,7 +161,7 @@ def main():
 
         # Step 2: Fetch the transcript
         print("Fetching YouTube transcript...")
-        transcript = get_youtube_transcript(video_id)
+        transcript = get_youtube_transcript(video_id, language=(language))
         if "Error" in transcript:
             print(transcript)
         else:
