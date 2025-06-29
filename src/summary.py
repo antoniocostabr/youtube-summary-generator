@@ -32,9 +32,11 @@ def get_youtube_transcript(video_id: str, language: str='en') -> str:
     Fetch the transcript of a YouTube video given its video ID.
     """
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=(language,))
+
+        fetched_transcript  = YouTubeTranscriptApi().fetch(video_id, languages=[language])
+
         # Combine transcript into a single string
-        transcript_text = " ".join([entry['text'] for entry in transcript])
+        transcript_text = " ".join([snippet.text for snippet in fetched_transcript])
         return transcript_text
     except Exception as e:
         return f"Error fetching transcript: {e}"
